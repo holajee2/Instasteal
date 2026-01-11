@@ -1,31 +1,57 @@
--- ===== YK INSTA STEAL LOADER =====
+-- ===== LOADER PARA KEYAUTH =====
 
--- 🔑 KEY DEL USUARIO
+local HttpService = game:GetService("HttpService")
 local KEY = getgenv().KEY or ""
 
 if KEY == "" then
-    warn("❌ No key detectada")
+    warn("❌ No key detectada, usa:")
+    warn("getgenv().KEY = \"TU_KEY_AQUI\"")
     return
 end
 
--- 🔐 KEYATH AUTH
-local AUTH_URL = "https://keyath.xyz/api/verify"
+-- KeyAuth params
+local appName = "TU_APP_NAME"
+local ownerID = "TU_OWNER_ID"
+local secret  = "TU_SECRET"
+local version = "1.0"
+
+-- Form data
+local body = HttpService:JSONEncode({
+    type = "login",
+    name = appName,
+    ownerid = ownerID,
+    secret = secret,
+    key = KEY,
+    version = version
+})
 
 local response
-pcall(function()
-    response = game:HttpGet(AUTH_URL .. "?key=" .. KEY)
+local ok, err = pcall(function()
+    response = HttpService:JSONDecode(
+        (syn and syn.request or http_request or http.request)({
+            Url = "https://keyauth.cc/api/1.2/",
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = body
+        }).Body
+    )
 end)
 
--- ❌ FALLA
-if response ~= "valid" then
-    warn("❌ Key inválida / expirada / HWID incorrecto")
+if not ok or not response then
+    warn("❌ Error de conexión a KeyAuth")
     return
 end
 
--- ✅ AUTORIZADO
+-- Check
+if not response.success then
+    warn("❌ Key inválida o expiró.")
+    return
+end
+
+-- AUTORIZADO
 _G.__AUTH_OK = true
 
--- 🚀 SCRIPT PRINCIPAL (OBFUSCADO)
+-- Ejecutar script real
 loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/holajee2/Instasteal/main/main.lua"
 ))()
