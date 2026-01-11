@@ -1,57 +1,53 @@
--- ===== LOADER PARA KEYAUTH =====
-
 local HttpService = game:GetService("HttpService")
-local KEY = getgenv().KEY or ""
 
-if KEY == "" then
-    warn("❌ No key detectada, usa:")
-    warn("getgenv().KEY = \"TU_KEY_AQUI\"")
+local request = syn and syn.request
+    or http_request
+    or request
+    or (fluxus and fluxus.request)
+
+if not request then
     return
 end
 
--- KeyAuth params
-local appName = "TU_APP_NAME"
-local ownerID = "TU_OWNER_ID"
-local secret  = "TU_SECRET"
-local version = "1.0"
+local KEY = getgenv().KEY
+if not KEY or KEY == "" then
+    return
+end
 
--- Form data
+local APP_NAME = "Instasteal"
+local OWNER_ID = "Kfi7cbMwv4"
+local SECRET = "8a156055ae428360923c5723c9e5ac88531f33b77413a06b60a50718f7bc7b10"
+local VERSION = "1.0"
+
 local body = HttpService:JSONEncode({
     type = "login",
-    name = appName,
-    ownerid = ownerID,
-    secret = secret,
+    name = APP_NAME,
+    ownerid = OWNER_ID,
+    secret = SECRET,
     key = KEY,
-    version = version
+    version = VERSION
 })
 
-local response
-local ok, err = pcall(function()
-    response = HttpService:JSONDecode(
-        (syn and syn.request or http_request or http.request)({
-            Url = "https://keyauth.cc/api/1.2/",
-            Method = "POST",
-            Headers = {["Content-Type"] = "application/json"},
-            Body = body
-        }).Body
-    )
-end)
+local res = request({
+    Url = "https://keyauth.cc/api/1.2/",
+    Method = "POST",
+    Headers = {
+        ["Content-Type"] = "application/json"
+    },
+    Body = body
+})
 
-if not ok or not response then
-    warn("❌ Error de conexión a KeyAuth")
+if not res or not res.Body then
     return
 end
 
--- Check
-if not response.success then
-    warn("❌ Key inválida o expiró.")
+local data = HttpService:JSONDecode(res.Body)
+
+if not data.success then
     return
 end
 
--- AUTORIZADO
 _G.__AUTH_OK = true
 
--- Ejecutar script real
-loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/holajee2/Instasteal/main/main.lua"
-))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/holajee2/Instasteal/main/main.lua"))()
+
