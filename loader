@@ -1,9 +1,10 @@
 local HttpService = game:GetService("HttpService")
 
-local request = syn and syn.request
-    or http_request
-    or request
-    or (fluxus and fluxus.request)
+local request =
+    syn and syn.request or
+    http_request or
+    request or
+    (fluxus and fluxus.request)
 
 if not request then
     return
@@ -14,18 +15,13 @@ if not KEY or KEY == "" then
     return
 end
 
-local APP_NAME = "Instasteal"
-local OWNER_ID = "Kfi7cbMwv4"
-local SECRET = "8a156055ae428360923c5723c9e5ac88531f33b77413a06b60a50718f7bc7b10"
-local VERSION = "1.0"
-
 local body = HttpService:JSONEncode({
     type = "login",
-    name = APP_NAME,
-    ownerid = OWNER_ID,
-    secret = SECRET,
+    name = "Instasteal",
+    ownerid = "Kfi7cbMwv4",
+    secret = "8a156055ae428360923c5723c9e5ac88531f33b77413a06b60a50718f7bc7b10",
     key = KEY,
-    version = VERSION
+    version = "1.0"
 })
 
 local res = request({
@@ -49,5 +45,6 @@ end
 
 _G.__AUTH_OK = true
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/holajee2/Instasteal/main/main.lua"))()
-
+loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/holajee2/Instasteal/main/main.lua"
+))()
