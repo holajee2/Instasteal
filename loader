@@ -1,0 +1,31 @@
+-- ===== YK INSTA STEAL LOADER =====
+
+-- 🔑 KEY DEL USUARIO
+local KEY = getgenv().KEY or ""
+
+if KEY == "" then
+    warn("❌ No key detectada")
+    return
+end
+
+-- 🔐 KEYATH AUTH
+local AUTH_URL = "https://keyath.xyz/api/verify"
+
+local response
+pcall(function()
+    response = game:HttpGet(AUTH_URL .. "?key=" .. KEY)
+end)
+
+-- ❌ FALLA
+if response ~= "valid" then
+    warn("❌ Key inválida / expirada / HWID incorrecto")
+    return
+end
+
+-- ✅ AUTORIZADO
+_G.__AUTH_OK = true
+
+-- 🚀 SCRIPT PRINCIPAL (OBFUSCADO)
+loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/holajee2/Instasteal/main/main.lua"
+))()
